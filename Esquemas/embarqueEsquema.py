@@ -6,4 +6,4 @@ class EmbarqueEsquema(ma.Schema):
     class Meta:
         fields = ('idFile','mbl','hbl', 'buque', 'pol', 'pod', 'destinoFinal', 'viaje', 'naviera',
                   'tipo', 'cliente', 'cntr20DC', 'cntr40DC', 'cntr40HQ', 'cntrLCL', 'contenedores',
-                  'etd', 'eta', 'status')
+                  'etd', 'eta', 'status', 'crm')

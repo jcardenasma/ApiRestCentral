@@ -22,10 +22,11 @@ class Embarque(db.Model):
     etd = db.Column(db.String)
     eta = db.Column(db.String)
     status = db.Column(db.String)
+    crm = db.Column(db.String, db.ForeignKey('cliente.crm'))
 
     def __init__(self, idFile, mbl, hbl, buque, pol, pod, destinoFinal, viaje, naviera
                  , tipo, cliente, cntr20DC, cntr40DC, cntr40HQ, cntrLCL, contenedores,
-                 etd, eta, status):
+                 etd, eta, status, crm):
         self.idFile = idFile
         self.mbl = mbl
         self.hbl = hbl
@@ -45,3 +46,4 @@ class Embarque(db.Model):
         self.etd = etd
         self.eta = eta
         self.status = status
+        self.crm = crm

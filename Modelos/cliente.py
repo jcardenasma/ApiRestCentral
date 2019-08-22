@@ -5,10 +5,9 @@ class Cliente(db.Model):
     rfc = db.Column(db.String)
     password = db.Column(db.String)
     crm = db.Column(db.String)
-    nombre = db.Column(db.String, db.ForeignKey('embarque.cliente'), nullable= False)
+    embarques = db.relationship('Embarque')
     
-    def __init__(self, idCliente, rfc, passw, crm):
-        self.idCliente = idCliente
+    def __init__(self, rfc, passw, crm):
         self.rfc = rfc
         self.password = passw
         self.crm = crm

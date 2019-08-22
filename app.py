@@ -24,11 +24,15 @@ db.init_app(app)
 # Inicializar ma
 ma.init_app(app)
 
+with app.app_context():
+    db.create_all()
+
 
 # Iniciar el esquema
 embarque_esquema = EmbarqueEsquema()
 embarques_esquema = EmbarqueEsquema(many = True)
 cliente_esquema = ClienteEsquema()
+clientes_esquema = ClienteEsquema(many = True)
 
 # Crear un embarque
 @app.route('/copia', methods=['GET'])
@@ -55,9 +59,11 @@ def addEmbarque():
         etd = str(i['ETD'])
         eta = str(i['ETA'])
         status = str(i['STATUS EMBARQUES'])
+        crm = str(i["_ID_CLIENTE"])
         
         nuevoEmbarque = Embarque(idFile, mbl, hbl, buque, pol, pod, destinoFinal, viaje,
-                                 naviera, tipo, cliente, cntr20DC, cntr40DC, cntr40HQ, cntrLCL, contenedores, etd, eta, status)
+                                 naviera, tipo, cliente, cntr20DC, cntr40DC, cntr40HQ, cntrLCL, 
+                                 contenedores, etd, eta, status, crm)
         db.session.add(nuevoEmbarque)
         db.session.commit()
     return jsonify({'msg': 'Elementos agregados!'})
@@ -67,6 +73,48 @@ def get_embarques():
     all_embarques = Embarque.query.all()
     result = embarques_esquema.dump(all_embarques)
     return jsonify(result)
+
+@app.route('/copiarClientes')
+def copiar_Clientes():
+    atraccion.copiaClientes()
+    #all_Clientes = Cliente.query.all().count()
+    #result = clientes_esquema.dump(all_Clientes)
+    #return jsonify(result)
+    return jsonify({'msg:', 'Clientes copiados exitosamente'})
+
+@app.route('/setCliente', methods=['POST'])
+def set_Cliente():
+    data = request.get_json()
+    newClient = Cliente(data['rfc'], data['password'], data['crm'])
+    db.session.add(newClient)
+    db.session.commit()
+    return jsonify({'msg': 'El cliente fue agregado exitosamente'})
+
+@app.route('/getClientes')
+def get_Clientes():
+    all_Clientes = Cliente.query.all()
+    result = clientes_esquema.dump(all_Clientes)
+    return jsonify(result)
+
+@app.route('/restoClientes')
+def maxCliente():
+    #Función para traer el max de un campo
+    max_cliente = str(db.session.query(db.func.max(Cliente.crm)).scalar())
+    #Lo comentado funciona, solo que nos trae el select count
+    totalCliente = int(Cliente.query.count())
+    #print(max_cliente)
+    #atraccion.copiaClientesFaltantes(max_cliente, totalCliente)
+    return jsonify({'max': max_cliente, 'total': totalCliente})
+
+@app.route('/copiaEmb')
+def traeEmbarques():
+    consultaCli = Cliente.query.all()
+    resultadoCli = clientes_esquema.dump(consultaCli)
+    for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
+        if len(x) > 1:
+            print(x)
+            (atraccion.cargaEmbarques(x))
+    return jsonify({'msg': 'Proceso finalizado'})
 
 # Correr servidor
 if __name__== '__main__':
