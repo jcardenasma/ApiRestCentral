@@ -5,11 +5,12 @@ import atraccion
 from app_db import db, ma
 
 from Modelos.embarque import Embarque
-#from Modelos.factura import Factura
+from Modelos.factura import Factura
 from Modelos.cliente import Cliente
 
 from Esquemas.clienteEsquema import ClienteEsquema
 from Esquemas.embarqueEsquema import EmbarqueEsquema
+from Esquemas.facturaEsquema import FacturaEsquema
 
 # Iniciar app
 app = Flask(__name__)
@@ -33,6 +34,8 @@ embarque_esquema = EmbarqueEsquema()
 embarques_esquema = EmbarqueEsquema(many = True)
 cliente_esquema = ClienteEsquema()
 clientes_esquema = ClienteEsquema(many = True)
+factura_esquema = FacturaEsquema()
+facturas_esquema = FacturaEsquema(many= True)
 
 # Crear un embarque
 @app.route('/copia', methods=['GET'])
@@ -85,7 +88,7 @@ def copiar_Clientes():
 @app.route('/setCliente', methods=['POST'])
 def set_Cliente():
     data = request.get_json()
-    newClient = Cliente(data['rfc'], data['password'], data['crm'])
+    newClient = Cliente(data["rfc"], data["password"], data["crm"])
     db.session.add(newClient)
     db.session.commit()
     return jsonify({'msg': 'El cliente fue agregado exitosamente'})
@@ -113,8 +116,31 @@ def traeEmbarques():
     for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
         if len(x) > 1:
             print(x)
-            (atraccion.cargaEmbarques(x))
+            carga = (atraccion.cargaEmbarques(x))
+            if (carga):
+                print("Embarques cargados del cliente")
     return jsonify({'msg': 'Proceso finalizado'})
+
+@app.route('/copiaFac')
+def traeFacturas():
+    consultaCli = Cliente.query.all()
+    resultadoCli = clientes_esquema.dump(consultaCli)
+    prueba = False
+    for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
+        if len(x) > 1:
+            if(prueba): break
+            print(x)
+            carga = (atraccion.cargaFacturas(x))
+            if (carga):
+                print("Facturas cargadas del cliente")
+                prueba = True
+    return jsonify({'msg': 'Proceso finalizado'})
+
+@app.route('/getTodasFacturas')
+def getAllFact():
+    all_fact = Factura.query.all()
+    result = facturas_esquema.dump(all_fact)
+    return jsonify(result)
 
 # Correr servidor
 if __name__== '__main__':
