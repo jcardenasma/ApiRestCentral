@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_basicauth import BasicAuth
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS, cross_origin
 from sqlalchemy import and_
 import os
 from functools import wraps
@@ -19,12 +20,14 @@ from Esquemas.facturaEsquema import FacturaEsquema
 # Iniciar app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
+CORS(app)
 
 # Base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASIC_AUTH_USERNAME'] = 'system'
 app.config['BASIC_AUTH_PASSWORD'] = 'Sys1638'
+app.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin'
 
 # Inicializar db
 db.init_app(app)
@@ -218,10 +221,13 @@ def getAllFact():
     return jsonify(result)
 
 
-@app.route('/login')
-@basic_auth.required
+@app.route('/login', methods=['GET'])
+@cross_origin()
+#@basic_auth.required
 def login():
+    print("Llamada:", request)
     data = request.get_json()
+    print("Cuerpo:" ,data)
     busqueda = Cliente.query.filter(Cliente.rfc == str(data['rfc']), Cliente.password == data['password']).first_or_404()
     salida = cliente_esquema.dump(busqueda)['crm']
     return jsonify({'clave': salida})
