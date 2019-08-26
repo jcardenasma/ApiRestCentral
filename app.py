@@ -142,6 +142,8 @@ def getAllFact():
     result = facturas_esquema.dump(all_fact)
     return jsonify(result)
 
+
+
 # Correr servidor
 if __name__== '__main__':
     app.run(debug=True)
