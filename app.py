@@ -96,7 +96,7 @@ def copiar_Clientes():
     #all_Clientes = Cliente.query.all().count()
     #result = clientes_esquema.dump(all_Clientes)
     #return jsonify(result)
-    return jsonify({'msg:', 'Clientes copiados exitosamente'})
+    return jsonify({'msg': 'Clientes copiados exitosamente'})
 
 @app.route('/setCliente', methods=['POST'])
 def set_Cliente():
