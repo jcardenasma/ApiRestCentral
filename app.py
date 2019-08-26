@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_basicauth import BasicAuth
 from flask_marshmallow import Marshmallow
+from sqlalchemy import and_
 import os
 from functools import wraps
 
@@ -51,6 +52,7 @@ def index():
 
 # Crear un embarque
 @app.route('/copia', methods=['GET'])
+@basic_auth.required
 def addEmbarque():
     solicitud = (atraccion.busquedaEmbarque())
     
@@ -84,12 +86,36 @@ def addEmbarque():
     return jsonify({'msg': 'Elementos agregados!'})
 
 @app.route('/embarque', methods=['GET'])
+@basic_auth.required
 def get_embarques():
     all_embarques = Embarque.query.all()
     result = embarques_esquema.dump(all_embarques)
     return jsonify(result)
 
+#Mandar un embarque de registro nuevo o actualizar
+@app.route('/setEmbarque', methods=['POST', 'PUT'])
+def set_Embarque():
+    data = request.get_json()
+    if request.method == 'POST':
+        db.session.add(atraccion.acomodaEmbarque(data))
+        db.session.commit()
+        return jsonify({'msg': 'Embarque añadido exitosamente'})
+    else:
+        busqueda = Embarque.query.filter_by(idFile = data['ID_FILE']).first()
+        busqueda = atraccion.acomodaEmbarque(data)
+        db.session.commit()
+        return jsonify({'msg': 'Embarque modificado exitosamente'})
+
+#Elimina un embarque dado que fue terminado o cancelado
+@app.route('/delEmbarque/<int:numFile>', methods=['DELETE'])
+def del_Embarque(numFile):
+    busqueda = Embarque.query.filter_by(idFile = numFile).first()
+    db.session.delete(busqueda)
+    db.session.commit()
+    return jsonify({'msg': 'Embarque eliminado correctamente'})
+
 @app.route('/copiarClientes')
+@basic_auth.required
 def copiar_Clientes():
     atraccion.copiaClientes()
     #all_Clientes = Cliente.query.all().count()
@@ -97,21 +123,34 @@ def copiar_Clientes():
     #return jsonify(result)
     return jsonify({'msg': 'Clientes copiados exitosamente'})
 
-@app.route('/setCliente', methods=['POST'])
+#Crear un cliente
+@app.route('/setCliente', methods=['POST', 'PUT'])
+@basic_auth.required
 def set_Cliente():
-    data = request.get_json()
-    newClient = Cliente(data["rfc"], data["password"], data["crm"])
-    db.session.add(newClient)
-    db.session.commit()
-    return jsonify({'msg': 'El cliente fue agregado exitosamente'})
+    if request.method == 'POST':
+        data = request.get_json()
+        newClient = Cliente(data["rfc"], data["password"], data["crm"])
+        db.session.add(newClient)
+        db.session.commit()
+        return jsonify({'msg': 'El cliente fue agregado exitosamente'})
+    else:
+        data = request.get_json()
+        busqueda = Cliente.query.filter_by(crm = (data['crm'])).first()
+        busqueda.rfc = data['rfc']
+        busqueda.password = data['password']
+        db.session.commit()
+        return jsonify({'msg': 'Cliente modificado exitosamente'})
+
 
 @app.route('/getClientes')
+@basic_auth.required
 def get_Clientes():
     all_Clientes = Cliente.query.all()
     result = clientes_esquema.dump(all_Clientes)
     return jsonify(result)
 
 @app.route('/restoClientes')
+@basic_auth.required
 def maxCliente():
     #Función para traer el max de un campo
     max_cliente = str(db.session.query(db.func.max(Cliente.crm)).scalar())
@@ -122,6 +161,7 @@ def maxCliente():
     return jsonify({'max': max_cliente, 'total': totalCliente})
 
 @app.route('/copiaEmb')
+@basic_auth.required
 def traeEmbarques():
     consultaCli = Cliente.query.all()
     resultadoCli = clientes_esquema.dump(consultaCli)
@@ -134,26 +174,33 @@ def traeEmbarques():
     return jsonify({'msg': 'Proceso finalizado'})
 
 @app.route('/copiaFac')
+@basic_auth.required
 def traeFacturas():
     consultaCli = Cliente.query.all()
     resultadoCli = clientes_esquema.dump(consultaCli)
-    prueba = False
     for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
         if len(x) > 1:
-            if(prueba): break
             print(x)
             carga = (atraccion.cargaFacturas(x))
             if (carga):
                 print("Facturas cargadas del cliente")
-                prueba = True
     return jsonify({'msg': 'Proceso finalizado'})
 
 @app.route('/getTodasFacturas')
+@basic_auth.required
 def getAllFact():
     all_fact = Factura.query.all()
     result = facturas_esquema.dump(all_fact)
     return jsonify(result)
 
+
+@app.route('/login')
+@basic_auth.required
+def login():
+    data = request.get_json()
+    busqueda = Cliente.query.filter(Cliente.rfc == str(data['rfc']), Cliente.password == data['password']).first_or_404()
+    salida = cliente_esquema.dump(busqueda)['crm']
+    return jsonify({'clave': salida})
 
 
 # Correr servidor
