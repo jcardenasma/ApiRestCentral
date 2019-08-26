@@ -94,6 +94,7 @@ def get_embarques():
 
 #Mandar un embarque de registro nuevo o actualizar
 @app.route('/setEmbarque', methods=['POST', 'PUT'])
+@basic_auth.required
 def set_Embarque():
     data = request.get_json()
     if request.method == 'POST':
@@ -108,12 +109,15 @@ def set_Embarque():
 
 #Elimina un embarque dado que fue terminado o cancelado
 @app.route('/delEmbarque/<int:numFile>', methods=['DELETE'])
+@basic_auth.required
 def del_Embarque(numFile):
     busqueda = Embarque.query.filter_by(idFile = numFile).first()
     db.session.delete(busqueda)
     db.session.commit()
     return jsonify({'msg': 'Embarque eliminado correctamente'})
 
+
+#Copiamos todos los clientes desde filemaker
 @app.route('/copiarClientes')
 @basic_auth.required
 def copiar_Clientes():
@@ -141,7 +145,7 @@ def set_Cliente():
         db.session.commit()
         return jsonify({'msg': 'Cliente modificado exitosamente'})
 
-
+#Nos traemos todos los clientes
 @app.route('/getClientes')
 @basic_auth.required
 def get_Clientes():
@@ -173,6 +177,8 @@ def traeEmbarques():
                 print("Embarques cargados del cliente")
     return jsonify({'msg': 'Proceso finalizado'})
 
+
+#Copia la facturas desde filemaker hacia el api
 @app.route('/copiaFac')
 @basic_auth.required
 def traeFacturas():
@@ -186,6 +192,24 @@ def traeFacturas():
                 print("Facturas cargadas del cliente")
     return jsonify({'msg': 'Proceso finalizado'})
 
+#Permite mandar una factura nueva
+@app.route('/setFactura', methods=['POST'])
+@basic_auth.required
+def set_Factura():
+    data = request.get_json()
+    db.session.add(atraccion.acomodaFactura(data))
+    db.session.commit()
+    return jsonify({'msg': 'Factura agregada correctamente'})
+
+@app.route('/delFactura/<int:noFact>', methods = ['DELETE'])
+@basic_auth.required
+def del_Factura(noFact):
+    busqueda = Factura.query.filter_by(noFactura = noFact).first()
+    db.session.delete(busqueda)
+    db.session.commit()
+    return jsonify({'msg': 'Factura eliminada correctamente'})
+
+#Traer todas las facturas de todos los usuarios
 @app.route('/getTodasFacturas')
 @basic_auth.required
 def getAllFact():

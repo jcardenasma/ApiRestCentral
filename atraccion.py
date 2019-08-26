@@ -175,13 +175,9 @@ def cargaFacturas(crm):
 
 def acomodaFactura(respuesta):
         noFactura = str(respuesta['_NO FACTURA'])
-        print(noFactura)
         cfdi = str(respuesta['CFDI.UUID'])
-        print(cfdi)
         crm = str(respuesta['ID_CLIENTE'])
-        print(crm)
         certificadoFecha = str(respuesta['CERTIFICADO.FECHA'])
-        print(certificadoFecha)
         noFile = str(respuesta['FILE'])
         empresa = str(respuesta['EMPRESA_QUE_FACTURARA'])
         rfc = str(respuesta['RFC'])
@@ -196,7 +192,6 @@ def acomodaFactura(respuesta):
 
         nuevaFactura = Factura(noFactura, cfdi, crm, certificadoFecha, noFile, empresa, rfc, nombrePdf, 
                         xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante)
-        print(nuevaFactura)
         return nuevaFactura
 
 def acomodaCliente(respuesta):
