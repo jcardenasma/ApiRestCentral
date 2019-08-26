@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, make_response
-from flask_basicauth import BasicAuth
+#from flask_basicauth import BasicAuth
 from flask_marshmallow import Marshmallow
 import os
 from functools import wraps
@@ -22,10 +22,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['BASIC_AUTH_USERNAME'] = 'system'
-app.config['BASIC_AUTH_PASSWORD'] = 'Sys1638'
+#app.config['BASIC_AUTH_USERNAME'] = 'system'
+#app.config['BASIC_AUTH_PASSWORD'] = 'Sys1638'
 
-basic_auth = BasicAuth(app)
+#basic_auth = BasicAuth(app)
 
 # Inicializar db
 db.init_app(app)
@@ -45,7 +45,7 @@ factura_esquema = FacturaEsquema()
 facturas_esquema = FacturaEsquema(many= True)
 
 @app.route('/')
-@basic_auth.required
+#@basic_auth.required
 def index():
     return '<h1>Hello world</h1>'
 
