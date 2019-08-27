@@ -88,12 +88,22 @@ def addEmbarque():
         db.session.commit()
     return jsonify({'msg': 'Elementos agregados!'})
 
+#Obtenemos todos los embarques
 @app.route('/embarque', methods=['GET'])
 @basic_auth.required
 def get_embarques():
     all_embarques = Embarque.query.all()
     result = embarques_esquema.dump(all_embarques)
     return jsonify(result)
+
+#Obtenemos los embarques de un solo cliente
+@app.route('/embarque/<string:idCliente>')
+@basic_auth.required
+def get_embarquesCliente(idCliente):
+    embarques = Embarque.query.filter_by(crm = idCliente).all()
+    salida = embarques_esquema.dump(embarques)
+    return jsonify(salida)
+
 
 #Mandar un embarque de registro nuevo o actualizar
 @app.route('/setEmbarque', methods=['POST', 'PUT'])
@@ -167,6 +177,8 @@ def maxCliente():
     #atraccion.copiaClientesFaltantes(max_cliente, totalCliente)
     return jsonify({'max': max_cliente, 'total': totalCliente})
 
+
+#Trae todos los embarques desde Filemaker
 @app.route('/copiaEmb')
 @basic_auth.required
 def traeEmbarques():
@@ -204,6 +216,7 @@ def set_Factura():
     db.session.commit()
     return jsonify({'msg': 'Factura agregada correctamente'})
 
+#Borra una factura en específico usando su noFact como buscador
 @app.route('/delFactura/<int:noFact>', methods = ['DELETE'])
 @basic_auth.required
 def del_Factura(noFact):
@@ -211,6 +224,15 @@ def del_Factura(noFact):
     db.session.delete(busqueda)
     db.session.commit()
     return jsonify({'msg': 'Factura eliminada correctamente'})
+
+#Trae las facturas de un usuario
+@app.route('/getFacturas/<string:idCliente>')
+@basic_auth.required
+def getFacturasCliente(idCliente):
+    facturasCliente = Factura.query.filter_by(crm = idCliente).all()
+    salida = facturas_esquema.dump(facturasCliente)
+    return jsonify(salida)
+
 
 #Traer todas las facturas de todos los usuarios
 @app.route('/getTodasFacturas')
@@ -220,10 +242,10 @@ def getAllFact():
     result = facturas_esquema.dump(all_fact)
     return jsonify(result)
 
-
-@app.route('/login', methods=['GET'])
+#Nos permite hacer el login, regresa el CRM en un JSON
+@app.route('/login', methods=['POST'])
 @cross_origin()
-#@basic_auth.required
+@basic_auth.required
 def login():
     print("Llamada:", request)
     data = request.get_json()
