@@ -4,6 +4,7 @@ from flask_marshmallow import Marshmallow
 from flask_cors import CORS, cross_origin
 from sqlalchemy import and_
 import os
+import psycopg2
 from functools import wraps
 
 import atraccion
@@ -19,11 +20,13 @@ from Esquemas.facturaEsquema import FacturaEsquema
 
 # Iniciar app
 app = Flask(__name__)
-basedir = os.path.abspath(os.path.dirname(__file__))
+#basedir = os.path.abspath(os.path.dirname(__file__))
 CORS(app)
 
 # Base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASIC_AUTH_USERNAME'] = 'system'
 app.config['BASIC_AUTH_PASSWORD'] = 'Sys1638'
