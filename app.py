@@ -27,6 +27,7 @@ CORS(app)
 DATABASE_URL = os.environ['DATABASE_URL']
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://kjjjlebtbphapc:45af0f19ac1cde7156fd91cd63a57ff175edc24c9d984aaf24d1bcdaf372846d@ec2-54-243-193-59.compute-1.amazonaws.com:5432/d815ljg7gaet8b'
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+#Test
 #conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASIC_AUTH_USERNAME'] = 'system'
