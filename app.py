@@ -33,6 +33,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASIC_AUTH_USERNAME'] = 'system'
 app.config['BASIC_AUTH_PASSWORD'] = 'Sys1638'
 app.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin'
+app.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin'
 
 # Inicializar db
 db.init_app(app)
