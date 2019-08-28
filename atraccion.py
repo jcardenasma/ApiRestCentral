@@ -215,10 +215,10 @@ def acomodaEmbarque(respuesta):
         naviera = str(respuesta['NAVIERA']) if 'NAVIERA' in respuesta else " "
         tipo = str(respuesta['TIPO']) if 'TIPO' in respuesta else " "
         cliente = str(respuesta['CLIENTE']) if 'CLIENTE' in respuesta else " "
-        cntr20DC = int(respuesta['CNTR 20DC']) if 'CNTR 20DC' and len(respuesta['CNTR 20DC']) > 0 in respuesta else 0
-        cntr40DC = int(respuesta['CNTR 40DC']) if 'CNTR 40DC' and len(respuesta['CNTR 40DC']) > 0 in respuesta else 0
-        cntr40HQ = int(respuesta['CNTR 40HQ']) if 'CNTR 40HQ' and len(respuesta['CNTR 40HQ']) > 0 in respuesta else 0
-        cntrLCL = int(respuesta['CNTR LCL']) if 'CNTR LCL' and len(respuesta['CNTR LCL']) > 0 in respuesta else 0
+        cntr20DC = int(respuesta['CNTR 20DC']) if 'CNTR 20DC' in respuesta and len(respuesta['CNTR 20DC']) > 0  else 0
+        cntr40DC = int(respuesta['CNTR 40DC']) if 'CNTR 40DC' in respuesta and len(respuesta['CNTR 40DC']) > 0  else 0
+        cntr40HQ = int(respuesta['CNTR 40HQ']) if 'CNTR 40HQ' in respuesta and len(respuesta['CNTR 40HQ']) > 0  else 0
+        cntrLCL = int(respuesta['CNTR LCL']) if 'CNTR LCL' in respuesta and len(respuesta['CNTR LCL']) > 0  else 0
         contenedores = str(respuesta['CONTENEDORES']) if 'CONTENEDORES' in respuesta else " "
         etd = str(respuesta['ETD']) if 'ETD' in respuesta else " "
         eta = str(respuesta['ETA']) if 'ETA' in respuesta else " "
