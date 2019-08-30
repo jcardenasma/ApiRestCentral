@@ -271,7 +271,9 @@ def act_cliente():
         db.session.commit()
         return jsonify({'msg': 'El cliente ha sido añadido exitosamente'})
     else:
-        if busqueda.rfc == data['rfc'] and busqueda.password == data['password']:
+        rfc = busqueda.rfc
+        passw = busqueda.password
+        if rfc == data['rfc'] and passw == data['password']:
             return jsonify({'msg': 'El cliente se encuentra actualizado'})
         else:
             busqueda.rfc = data['rfc']
