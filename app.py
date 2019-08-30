@@ -260,6 +260,24 @@ def login():
     return jsonify({'clave': salida})
 
 
+@app.route('/actCliente', methods=['POST'])
+@basic_auth.required
+def act_cliente():
+    data = request.get_json()
+    busqueda = Cliente.query.filter_by(crm = data['crm']).first
+    if busqueda == None:
+        db.session.add(atraccion.acomodaCliente(data))
+        db.session.commit()
+        return jsonify({'msg': 'El cliente ha sido añadido exitosamente'})
+    else:
+        if busqueda.rfc == data['rfc'] and busqueda.password == data['password']:
+            return jsonify({'msg': 'El cliente se encuentra actualizado'})
+        else:
+            busqueda.rfc = data['rfc']
+            busqueda.password = data['password']
+            db.session.commit()
+            return jsonify({'msg': 'El cliente ha sido actualizado exitosamente'})
+
 # Correr servidor
 if __name__== '__main__':
     app.run(debug=True)
