@@ -264,16 +264,13 @@ def login():
 @basic_auth.required
 def act_cliente():
     data = request.get_json()
-    busqueda = Cliente.query.filter_by(crm = data['crm']).first
-    print(busqueda)
+    busqueda = Cliente.query.filter_by(crm = data['crm']).first()
     if busqueda == None:
         db.session.add(atraccion.acomodaCliente(data))
         db.session.commit()
         return jsonify({'msg': 'El cliente ha sido añadido exitosamente'})
     else:
-        rfc = busqueda.rfc
-        passw = busqueda.password
-        if rfc == data['rfc'] and passw == data['password']:
+        if busqueda.rfc == data['rfc'] and busqueda.password == data['password']:
             return jsonify({'msg': 'El cliente se encuentra actualizado'})
         else:
             busqueda.rfc = data['rfc']
