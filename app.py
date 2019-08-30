@@ -265,6 +265,7 @@ def login():
 def act_cliente():
     data = request.get_json()
     busqueda = Cliente.query.filter_by(crm = data['crm']).first
+    print(busqueda)
     if busqueda == None:
         db.session.add(atraccion.acomodaCliente(data))
         db.session.commit()
