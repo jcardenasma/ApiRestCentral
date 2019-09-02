@@ -17,9 +17,10 @@ class Factura(db.Model):
     importeFact = db.Column(db.String)
     fechaFact = db.Column(db.String)
     tipoComprobante = db.Column(db.String)
+    factNum = db.Column(db.String)
 
     def __init__(self, noFactura, cfdi, crm, certificadoFecha, noFile, empresa, rfc, 
-                    nombrePdf, xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante):
+                    nombrePdf, xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante,factNum):
         self.noFactura = noFactura
         self.cfdi = cfdi
         self.crm = crm
@@ -35,4 +36,4 @@ class Factura(db.Model):
         self.importeFact = importeFact
         self.fechaFact = fechaFact
         self.tipoComprobante = tipoComprobante
-        
+        self.factNum = factNum

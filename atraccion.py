@@ -189,9 +189,10 @@ def acomodaFactura(respuesta):
         importeFact = str(respuesta['IMPORTE FACT'])
         fechaFact = str(respuesta['FECHA FACT'])
         tipoComprobante = str(respuesta['TIPO.COMPROBANTE'])
+        factNum = str(respuesta['FactNum'])
 
         nuevaFactura = Factura(noFactura, cfdi, crm, certificadoFecha, noFile, empresa, rfc, nombrePdf, 
-                        xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante)
+                        xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante, factNum)
         return nuevaFactura
 
 def acomodaCliente(respuesta):
