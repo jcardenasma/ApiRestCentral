@@ -130,6 +130,8 @@ def set_Embarque():
 @basic_auth.required
 def del_Embarque(numFile):
     busqueda = Embarque.query.filter_by(idFile = numFile).first()
+    if busqueda == None:
+        return jsonify({'msg': 'No existe tal embarque'})
     db.session.delete(busqueda)
     db.session.commit()
     return jsonify({'msg': 'Embarque eliminado correctamente'})
