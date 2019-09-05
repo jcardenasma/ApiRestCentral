@@ -113,38 +113,16 @@ def get_embarquesCliente(idCliente):
 #Mandar un embarque de registro nuevo o actualizar
 @app.route('/setEmbarque', methods=['POST', 'PUT'])
 @basic_auth.required
-
-        def set_Embarque():
+def set_Embarque():
     data = request.get_json()
     if request.method == 'POST':
         db.session.add(atraccion.acomodaEmbarque(data))
         db.session.commit()
         return jsonify({'msg': 'Embarque añadido exitosamente'})
     else:
-        data = request.get_json()
-        busqueda = Embarque.query.filter_by(idFile = data['ID_FILE']).first() 
-        busqueda.buque = data['BUQUE']
-        busqueda.cliente = data['CLIENTE']
-        busqueda.cntr20DC = data['20DC']
-        busqueda.cntr40DC = data['40DC']
-        busqueda.cntr40HQ = data['40HQ']
-        busqueda.cntrLCL = data['LCL']
-        busqueda.contenedores = data['CONTENEDORES']
-        busqueda.crm = data['_ID_CLIENTE']
-        busqueda.destinoFinal = data['FINAL']
-        busqueda.eta = data['ETA']
-        busqueda.etd = data['ETD']
-        busqueda.hbl = data['HBL']
-        busqueda.mbl = data['MBL']
-        busqueda.naviera = data['NAVIERA']
-        busqueda.pod = data['POD']
-        busqueda.pol = data['POL']
-        busqueda.status = data['STATUS EMBARQUES']
-        busqueda.tipo = data['TIPO']
-        busqueda.viaje = data['VIAJE']
+        busqueda = Embarque.query.filter_by(idFile = data['ID_FILE']).first()
+        busqueda = atraccion.acomodaEmbarque(data)
         db.session.commit()
-       # busqueda = atraccion.acomodaEmbarque(data)
-       # db.session.commit()
         return jsonify({'msg': 'Embarque modificado exitosamente'})
 
 #Elimina un embarque dado que fue terminado o cancelado
