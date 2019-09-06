@@ -120,10 +120,30 @@ def set_Embarque():
         db.session.commit()
         return jsonify({'msg': 'Embarque añadido exitosamente'})
     else:
+        data = request.get_json()
         busqueda = Embarque.query.filter_by(idFile = data['ID_FILE']).first()
-        busqueda = atraccion.acomodaEmbarque(data)
+        busqueda.mbl = data['MBL']
+        busqueda.hbl = data['HBL']
+        busqueda.buque = data['BUQUE']
+        busqueda.pol = data['POL']
+        busqueda.pod = data['POD']
+        busqueda.destinoFinal = data['FINAL']
+        busqueda.viaje = data['VIAJE']
+        busqueda.naviera = data['NAVIERA']
+        busqueda.tipo = data['TIPO']
+        busqueda.cliente = data['CLIENTE']
+        busqueda.cntr20DC = data['20DC']
+        busqueda.cntr40DC = data['40DC']
+        busqueda.cntr40HQ = data['40HQ']
+        busqueda.cntrLCL = data['LCL']
+        busqueda.contenedores = data['CONTENEDORES']
+        busqueda.etd = data['ETD']
+        busqueda.eta = data['ETA']
+        busqueda.status = data['STATUS EMBARQUES']
+        busqueda.crm = data['_ID_CLIENTE']
         db.session.commit()
         return jsonify({'msg': 'Embarque modificado exitosamente'})
+        
 
 #Elimina un embarque dado que fue terminado o cancelado
 @app.route('/delEmbarque/<int:numFile>', methods=['DELETE'])
