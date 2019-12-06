@@ -227,7 +227,7 @@ def set_Factura():
     return jsonify({'msg': 'Factura agregada correctamente'})
 
 #Borra una factura en específico usando su noFact como buscador
-@app.route('/delFactura/<int:noFact>', methods = ['DELETE'])
+@app.route('/delFactura/<string:noFact>', methods = ['DELETE'])
 @basic_auth.required
 def del_Factura(noFact):
     busqueda = Factura.query.filter_by(noFactura = noFact).first()
