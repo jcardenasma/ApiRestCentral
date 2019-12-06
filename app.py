@@ -230,7 +230,7 @@ def set_Factura():
 @app.route('/delFactura/<int:noFact>', methods = ['DELETE'])
 @basic_auth.required
 def del_Factura(noFact):
-    busqueda = Factura.query.filter_by(factNum = noFact).first()
+    busqueda = Factura.query.filter_by(noFactura = noFact).first()
     db.session.delete(busqueda)
     db.session.commit()
     return jsonify({'msg': 'Factura eliminada correctamente'})
