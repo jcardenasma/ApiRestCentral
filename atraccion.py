@@ -132,7 +132,7 @@ def cargaEmbarques(crm):
 
 
 def cargaEmbarquesTer(crm):
-        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm
 
         user = "system"
         password = "Sys1638"
@@ -145,7 +145,7 @@ def cargaEmbarquesTer(crm):
         #Traemos el total de los registros para poder saber cuántos tenemos
         totalRegistros = int(response.json()['info']['foundSetCount'])
 
-        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%2COPERACION%2C%27TIPO DE MOVIMIETO%27%2CCLIENTE%2C%27ORIGEN%27%2CDESTINO%2C%27FECHA CARGA%27%2C%27FECHA ARRIBO%27%2CTIPO_CAJA%2CRUTA%2CCRUCE%2C%27LINEA TRANSPORTISTA NACIONAL%27%2C%27LINEA TRANSPORTISTA INTERN%27%2CMERCANCIA%2C%27FECHA DESCARGA%27%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20ID_TERRESTRE_NUM%20ASC'
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%2COPERACION%2C%27TIPO DE MOVIMIETO%27%2CCLIENTE%2C%27ORIGEN%27%2CDESTINO%2C%27FECHA CARGA%27%2C%27FECHA ARRIBO%27%2CTIPO_CAJA%2CRUTA%2CCRUCE%2C%27LINEA TRANSPORTISTA NACIONAL%27%2C%27LINEA TRANSPORTISTA INTERN%27%2CMERCANCIA%2C%27FECHA DESCARGA%27%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20ID_TERRESTRE_NUM%20ASC'
 
         response = requests.get(url, auth=auth_values)
 
@@ -162,7 +162,7 @@ def cargaEmbarquesTer(crm):
                 return True
         else:
                 while(not (ingresados == totalRegistros)):
-                        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20ID_TERRESTRE_NUM%20ASC'
+                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20ID_TERRESTRE_NUM%20ASC'
                         response = requests.get(url, auth=auth_values)
 
                         for i in response.json()['data']:
@@ -176,7 +176,7 @@ def cargaEmbarquesTer(crm):
 
 
 def cargaEmbarquesAer(crm):
-        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarqueAerApi.json?RFMfind=SELECT%20ID_AEREO_EASYLOAD%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm
 
         user = "system"
         password = "Sys1638"
@@ -189,7 +189,7 @@ def cargaEmbarquesAer(crm):
         #Traemos el total de los registros para poder saber cuántos tenemos
         totalRegistros = int(response.json()['info']['foundSetCount'])
 
-        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CPROVEEDOR%2CCONSIGNATARIO_HOUSE%2CAEREOPUERTO_SALIDA%2CCIUDAD_SALIDA%2CAEREOPUERTO_DESTINO%2CCIUDAD_DESTINO%2CAWB%2CHWB%2CETD%2CETA%2CID_CLIENTE%2CCLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CPROVEEDOR%2CCONSIGNATARIO_HOUSE%2CAEREOPUERTO_SALIDA%2CCIUDAD_SALIDA%2CAEREOPUERTO_DESTINO%2CCIUDAD_DESTINO%2CAWB%2CHWB%2CETD%2CETA%2CID_CLIENTE%2CCLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
 
         response = requests.get(url, auth=auth_values)
 
@@ -206,7 +206,7 @@ def cargaEmbarquesAer(crm):
                 return True
         else:
                 while(not (ingresados == totalRegistros)):
-                        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
+                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
                         response = requests.get(url, auth=auth_values)
 
                         for i in response.json()['data']:
