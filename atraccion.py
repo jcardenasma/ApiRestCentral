@@ -189,14 +189,14 @@ def cargaEmbarquesAer(crm):
         #Traemos el total de los registros para poder saber cuántos tenemos
         totalRegistros = int(response.json()['info']['foundSetCount'])
 
-        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CPROVEEDOR%2CCONSIGNATARIO_HOUSE%2CAEREOPUERTO_SALIDA%2CCIUDAD_SALIDA%2CAEREOPUERTO_DESTINO%2CCIUDAD_DESTINO%2CAWB%2CHWB%2CETD%2CETA%2CID_CLIENTE%2CCLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_AEREO_EASYLOAD%2CPROVEEDOR%2CCONSIGNATARIO_HOUSE%2CAEREOPUERTO_SALIDA%2CCIUDAD_SALIDA%2CAEREOPUERTO_DESTINO%2CCIUDAD_DESTINO%2CAWB%2CHWB%2CETD%2CETA%2CID_CLIENTE%2CCLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
 
         response = requests.get(url, auth=auth_values)
 
         ingresados = 0
         lastID = ""
         for i in response.json()['data']:
-                lastID = str(i['ID_CALCULO'])
+                lastID = str(i['ID_AEREO_EASYLOAD'])
                 embarqueAer = acomodaEmbarqueAer(i)
                 db.session.add(embarqueAer)
                 db.session.commit()
@@ -206,11 +206,11 @@ def cargaEmbarquesAer(crm):
                 return True
         else:
                 while(not (ingresados == totalRegistros)):
-                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
+                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_AEREO_EASYLOAD%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
                         response = requests.get(url, auth=auth_values)
 
                         for i in response.json()['data']:
-                                lastID = str(i['ID_CALCULO'])
+                                lastID = str(i['ID_AEREO_EASYLOAD'])
                                 embarqueAer = acomodaEmbarqueAer(i)
                                 db.session.add(embarqueAer)
                                 db.session.commit()
