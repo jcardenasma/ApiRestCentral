@@ -18,9 +18,15 @@ class Factura(db.Model):
     fechaFact = db.Column(db.String)
     tipoComprobante = db.Column(db.String)
     factNum = db.Column(db.String)
+    placeReceipt = db.Column(db.String)
+    portLoading  = db.Column(db.String)
+    portDischarge  = db.Column(db.String)
+    placeDelivery  = db.Column(db.String)
+    fechaPago  = db.Column(db.String)
 
     def __init__(self, noFactura, cfdi, crm, certificadoFecha, noFile, empresa, rfc, 
-                    nombrePdf, xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante,factNum):
+                    nombrePdf, xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante,factNum,
+                    placeReceipt, portLoading, portDischarge, placeDelivery, fechaPago):
         self.noFactura = noFactura
         self.cfdi = cfdi
         self.crm = crm
@@ -37,3 +43,8 @@ class Factura(db.Model):
         self.fechaFact = fechaFact
         self.tipoComprobante = tipoComprobante
         self.factNum = factNum
+        self.placeReceipt = placeReceipt
+        self.portLoading = portLoading
+        self.portDischarge = portDischarge
+        self.placeDelivery = placeDelivery
+        self.fechaPago = fechaPago

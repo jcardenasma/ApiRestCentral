@@ -6,6 +6,8 @@ class Cliente(db.Model):
     password = db.Column(db.String)
     crm = db.Column(db.String, unique=True)
     embarques = db.relationship('Embarque')
+    embarquesTer = db.relationship('EmbarqueTer')
+    embarquesAer = db.relationship('EmbarqueAer')
     
     def __init__(self, rfc, passw, crm):
         self.rfc = rfc

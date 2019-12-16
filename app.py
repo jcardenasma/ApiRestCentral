@@ -11,11 +11,15 @@ import atraccion
 from app_db import db, ma
 
 from Modelos.embarque import Embarque
+from Modelos.embarqueTer import EmbarqueTer
+from Modelos.embarqueAer import EmbarqueAer
 from Modelos.factura import Factura
 from Modelos.cliente import Cliente
 
 from Esquemas.clienteEsquema import ClienteEsquema
 from Esquemas.embarqueEsquema import EmbarqueEsquema
+from Esquemas.embarqueTerEsquema import EmbarqueTerEsquema
+from Esquemas.embarqueAerEsquema import EmbarqueAerEsquema
 from Esquemas.facturaEsquema import FacturaEsquema
 
 # Iniciar app
@@ -47,6 +51,10 @@ basic_auth = BasicAuth(app)
 # Iniciar el esquema
 embarque_esquema = EmbarqueEsquema()
 embarques_esquema = EmbarqueEsquema(many = True)
+embarqueAer_esquema = EmbarqueAerEsquema()
+embarquesAer_esquema = EmbarqueAerEsquema(many = True)
+embarqueTer_esquema = EmbarqueTerEsquema()
+embarquesTer_esquema = EmbarqueTerEsquema(many = True)
 cliente_esquema = ClienteEsquema()
 clientes_esquema = ClienteEsquema(many = True)
 factura_esquema = FacturaEsquema()
@@ -58,6 +66,7 @@ def index():
     return '<h1>Hello world</h1>'
 
 
+#Embarques Maritimos
 # Crear un embarque
 @app.route('/copia', methods=['GET'])
 @basic_auth.required
@@ -93,22 +102,6 @@ def addEmbarque():
         db.session.commit()
     return jsonify({'msg': 'Elementos agregados!'})
 
-#Obtenemos todos los embarques
-@app.route('/embarque', methods=['GET'])
-@basic_auth.required
-def get_embarques():
-    all_embarques = Embarque.query.all()
-    result = embarques_esquema.dump(all_embarques)
-    return jsonify(result)
-
-#Obtenemos los embarques de un solo cliente
-@app.route('/embarque/<string:idCliente>')
-@basic_auth.required
-def get_embarquesCliente(idCliente):
-    embarques = Embarque.query.filter_by(crm = idCliente).all()
-    salida = embarques_esquema.dump(embarques)
-    return jsonify(salida)
-
 
 #Mandar un embarque de registro nuevo o actualizar
 @app.route('/setEmbarque', methods=['POST', 'PUT'])
@@ -126,8 +119,40 @@ def set_Embarque():
             setattr(busqueda, key, value)
         db.session.commit()
         return jsonify({'msg': 'Embarque modificado exitosamente'})
-        
 
+
+#Obtenemos todos los embarques
+@app.route('/embarque', methods=['GET'])
+@basic_auth.required
+def get_embarques():
+    all_embarques = Embarque.query.all()
+    result = embarques_esquema.dump(all_embarques)
+    return jsonify(result)
+
+#Obtenemos los embarques de un solo cliente
+@app.route('/embarque/<string:idCliente>')
+@basic_auth.required
+def get_embarquesCliente(idCliente):
+    embarques = Embarque.query.filter_by(crm = idCliente).all()
+    salida = embarques_esquema.dump(embarques)
+    return jsonify(salida)
+
+
+#Trae todos los embarques desde Filemaker
+@app.route('/copiaEmb')
+@basic_auth.required
+def traeEmbarques():
+    consultaCli = Cliente.query.all()
+    resultadoCli = clientes_esquema.dump(consultaCli)
+    for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
+        if len(x) > 1:
+            print(x)
+            carga = (atraccion.cargaEmbarques(x))
+            if (carga):
+                print("Embarques cargados del cliente")
+    return jsonify({'msg': 'Proceso finalizado'})
+
+        
 #Elimina un embarque dado que fue terminado o cancelado
 @app.route('/delEmbarque/<int:numFile>', methods=['DELETE'])
 @basic_auth.required
@@ -140,6 +165,157 @@ def del_Embarque(numFile):
     return jsonify({'msg': 'Embarque eliminado correctamente'})
 
 
+#Embarques Terrestres
+#Trae todos los embarques terrestres desde Filemaker
+@app.route('/copiaEmbTer')
+@basic_auth.required
+def traeEmbarquesTer():
+    consultaCli = Cliente.query.all()
+    resultadoCli = clientes_esquema.dump(consultaCli)
+    for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
+        if len(x) > 1:
+            print(x)
+            carga = (atraccion.cargaEmbarquesTer(x))
+            if (carga):
+                print("Embarques cargados del cliente")
+    return jsonify({'msg': 'Proceso finalizado'})
+
+
+#Obtenemos todos los embarques terrestres
+@app.route('/embarqueTer', methods=['GET'])
+@basic_auth.required
+def get_embarquesTer():
+    all_embarquesTer = EmbarqueTer.query.all()
+    result = embarquesTer_esquema.dump(all_embarquesTer)
+    return jsonify(result)
+
+
+#Obtenemos los embarques terrestres de un solo cliente
+@app.route('/embarqueTer/<string:idCliente>')
+@basic_auth.required
+def get_embarquesTerCliente(idCliente):
+    embarquesTer = EmbarqueTer.query.filter_by(crm = idCliente).all()
+    salida = embarquesTer_esquema.dump(embarquesTer)
+    return jsonify(salida)    
+
+
+#Mandar un registro de embarque terrestre nuevo o actualizarlo
+@app.route('/setEmbarqueTer', methods=['POST', 'PUT'])
+@basic_auth.required
+def set_EmbarqueTer():
+    data = request.get_json()
+    if request.method == 'POST':
+        db.session.add(atraccion.acomodaEmbarqueTer(data))
+        db.session.commit()
+        return jsonify({'msg': 'Embarque añadido exitosamente'})
+    else:
+        data = request.get_json()
+        busqueda = EmbarqueTer.query.filter_by(idFileTer = data['__ID_TERRESTRE']).first()
+        busqueda.operacion = data['OPERACION']
+        busqueda.tipoMovimiento = data['TIPO DE MOVIMIETO']
+        busqueda.cliente = data['CLIENTE']
+        busqueda.origen = data['ORIGEN']
+        busqueda.destino = data['DESTINO']
+        busqueda.fechaCarga = data['FECHA CARGA']
+        busqueda.fechaArribo = data['FECHA ARRIBO']
+        busqueda.tipoCaja = data['TIPO_CAJA']      
+        busqueda.crm = data['_ID_CLIENTE']
+        busqueda.rutaInt = data['RUTA']
+        busqueda.frontera = data['CRUCE']
+        busqueda.lineanac = data['LINEA TRANSPORTISTA NACIONAL']
+        busqueda.lineaint = data['LINEA TRANSPORTISTA INTERN']
+        busqueda.mercancia = data['MERCANCIA']
+        busqueda.fechaDescarga = data['FECHA DESCARGA']
+        db.session.commit()
+        return jsonify({'msg': 'Embarque modificado exitosamente'})   
+
+#Elimina un embarque terrestre dado que fue terminado o cancelado
+@app.route('/delEmbarqueTer/<string:idFileTer>', methods=['DELETE'])
+@basic_auth.required
+def del_EmbarqueTer(idFileTer):
+    busqueda = EmbarqueTer.query.filter_by(idFileTer = idFileTer).first()
+    if busqueda == None:
+        return jsonify({'msg': 'No existe tal embarque'})
+    db.session.delete(busqueda)
+    db.session.commit()
+    return jsonify({'msg': 'Embarque eliminado correctamente'})
+
+
+#Embarques Aereos
+#Trae todos los embarques aereos desde Filemaker
+@app.route('/copiaEmbAer')
+@basic_auth.required
+def traeEmbarquesAer():
+    consultaCli = Cliente.query.all()
+    resultadoCli = clientes_esquema.dump(consultaCli)
+    for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
+        if len(x) > 1:
+            print(x)
+            carga = (atraccion.cargaEmbarquesAer(x))
+            if (carga):
+                print("Embarques cargados del cliente")
+    return jsonify({'msg': 'Proceso finalizado'})
+
+
+#Obtenemos todos los embarques aereos
+@app.route('/embarqueAer', methods=['GET'])
+@basic_auth.required
+def get_embarquesAer():
+    all_embarquesAer = EmbarqueAer.query.all()
+    result = embarquesAer_esquema.dump(all_embarquesAer)
+    return jsonify(result)
+
+
+#Obtenemos los embarques aereos de un solo cliente
+@app.route('/embarqueAer/<string:idCliente>')
+@basic_auth.required
+def get_embarquesAerCliente(idCliente):
+    embarquesAer = EmbarqueAer.query.filter_by(crm = idCliente).all()
+    salida = embarquesAer_esquema.dump(embarquesAer)
+    return jsonify(salida)    
+
+
+#Mandar un registro de embarque aereo nuevo o actualizarlo
+@app.route('/setEmbarqueAer', methods=['POST', 'PUT'])
+@basic_auth.required
+def set_EmbarqueAer():
+    data = request.get_json()
+    if request.method == 'POST':
+        db.session.add(atraccion.acomodaEmbarqueAer(data))
+        db.session.commit()
+        return jsonify({'msg': 'Embarque añadido exitosamente'})
+    else:
+        data = request.get_json()
+        busqueda = EmbarqueAer.query.filter_by(idFileAer = data['ID_FILE_AEREO']).first()
+        busqueda.shipper = data['PROVEEDOR']
+        busqueda.consignatario = data['CONSIGNATARIO_HOUSE']
+        busqueda.aeropuertoSalida = data['AEREOPUERTO_SALIDA']
+        busqueda.origen = data['CIUDAD_SALIDA']
+        busqueda.aeropuertoDestino = data['AEREOPUERTO_DESTINO']  
+        busqueda.destino = data['CIUDAD_DESTINO']
+        busqueda.awb = data['AWB']
+        busqueda.hwb = data['HWB']
+        busqueda.etd = data['ETD']
+        busqueda.eta = data['ETA']
+        busqueda.crm = data['ID_CLIENTE']
+        busqueda.cliente = data['CLIENTE']
+        db.session.commit()
+        return jsonify({'msg': 'Embarque modificado exitosamente'})  
+ 
+
+#Elimina un embarque Aereo dado que fue terminado o cancelado
+@app.route('/delEmbarqueAer/<string:idFileAer>', methods=['DELETE'])
+@basic_auth.required
+def del_EmbarqueAer(idFileAer):
+    busqueda = EmbarqueAer.query.filter_by(idFileAer = idFileAer).first()
+    if busqueda == None:
+        return jsonify({'msg': 'No existe tal embarque'})
+    db.session.delete(busqueda)
+    db.session.commit()
+    return jsonify({'msg': 'Embarque eliminado correctamente'})
+
+
+#Clientes
 #Copiamos todos los clientes desde filemaker
 @app.route('/copiarClientes')
 @basic_auth.required
@@ -188,19 +364,24 @@ def maxCliente():
     return jsonify({'max': max_cliente, 'total': totalCliente})
 
 
-#Trae todos los embarques desde Filemaker
-@app.route('/copiaEmb')
+#Actualiza un cliente
+@app.route('/actCliente', methods=['POST'])
 @basic_auth.required
-def traeEmbarques():
-    consultaCli = Cliente.query.all()
-    resultadoCli = clientes_esquema.dump(consultaCli)
-    for x in list(dict.fromkeys([i['crm'] for i in resultadoCli])):
-        if len(x) > 1:
-            print(x)
-            carga = (atraccion.cargaEmbarques(x))
-            if (carga):
-                print("Embarques cargados del cliente")
-    return jsonify({'msg': 'Proceso finalizado'})
+def act_cliente():
+    data = request.get_json()
+    busqueda = Cliente.query.filter_by(crm = data['ID_CLIENTE']).first()
+    if busqueda == None:
+        db.session.add(atraccion.acomodaCliente(data))
+        db.session.commit()
+        return jsonify({'msg': 'El cliente ha sido añadido exitosamente'})
+    else:
+        if busqueda.rfc == data['RFC'] and busqueda.password == data['PasswordApi']:
+            return jsonify({'msg': 'El cliente se encuentra actualizado'})
+        else:
+            busqueda.rfc = data['RFC']
+            busqueda.password = data['PasswordApi']
+            db.session.commit()
+            return jsonify({'msg': 'El cliente ha sido actualizado exitosamente'})
 
 
 #Copia la facturas desde filemaker hacia el api
@@ -264,24 +445,6 @@ def login():
     salida = cliente_esquema.dump(busqueda)['crm']
     return jsonify({'clave': salida})
 
-
-@app.route('/actCliente', methods=['POST'])
-@basic_auth.required
-def act_cliente():
-    data = request.get_json()
-    busqueda = Cliente.query.filter_by(crm = data['ID_CLIENTE']).first()
-    if busqueda == None:
-        db.session.add(atraccion.acomodaCliente(data))
-        db.session.commit()
-        return jsonify({'msg': 'El cliente ha sido añadido exitosamente'})
-    else:
-        if busqueda.rfc == data['RFC'] and busqueda.password == data['PasswordApi']:
-            return jsonify({'msg': 'El cliente se encuentra actualizado'})
-        else:
-            busqueda.rfc = data['RFC']
-            busqueda.password = data['PasswordApi']
-            db.session.commit()
-            return jsonify({'msg': 'El cliente ha sido actualizado exitosamente'})
 
 # Correr servidor
 if __name__== '__main__':

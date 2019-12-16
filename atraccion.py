@@ -2,6 +2,8 @@ from app_db import db
 import requests
 import json
 
+from Modelos.embarqueTer import EmbarqueTer
+from Modelos.embarqueAer import EmbarqueAer
 from Modelos.embarque import Embarque
 from Modelos.cliente import Cliente
 from Modelos.factura import Factura
@@ -128,6 +130,94 @@ def cargaEmbarques(crm):
                                 ingresados += 1
                 return True
 
+
+def cargaEmbarquesTer(crm):
+        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm
+
+        user = "system"
+        password = "Sys1638"
+
+        auth_values = (user, password)
+        response = requests.get(url, auth=auth_values)
+        print(response.status_code)
+        if(response.status_code == 401 or response.status_code== 500):
+                return False
+        #Traemos el total de los registros para poder saber cuántos tenemos
+        totalRegistros = int(response.json()['info']['foundSetCount'])
+
+        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%2COPERACION%2C%27TIPO DE MOVIMIETO%27%2CCLIENTE%2C%27ORIGEN%27%2CDESTINO%2C%27FECHA CARGA%27%2C%27FECHA ARRIBO%27%2CTIPO_CAJA%2CRUTA%2CCRUCE%2C%27LINEA TRANSPORTISTA NACIONAL%27%2C%27LINEA TRANSPORTISTA INTERN%27%2CMERCANCIA%2C%27FECHA DESCARGA%27%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20ID_TERRESTRE_NUM%20ASC'
+
+        response = requests.get(url, auth=auth_values)
+
+        ingresados = 0
+        lastID = ""
+        for i in response.json()['data']:
+                lastID = str(i['__ID_TERRESTRE'])
+                embarqueTer = acomodaEmbarqueTer(i)
+                db.session.add(embarqueTer)
+                db.session.commit()
+                ingresados += 1
+        
+        if ingresados == totalRegistros:
+                return True
+        else:
+                while(not (ingresados == totalRegistros)):
+                        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesTerApi.json?RFMfind=SELECT%20__ID_TERRESTRE%2C_ID_CLIENTE%20WHERE%20STATUS%3DACTIVA%20AND%20_ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20ID_TERRESTRE_NUM%20ASC'
+                        response = requests.get(url, auth=auth_values)
+
+                        for i in response.json()['data']:
+                                lastID = str(i['__ID_TERRESTRE'])
+                                embarqueTer = acomodaEmbarqueTer(i)
+                                db.session.add(embarqueTer)
+                                db.session.commit()
+                                ingresados += 1
+                return True
+                                
+
+
+def cargaEmbarquesAer(crm):
+        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm
+
+        user = "system"
+        password = "Sys1638"
+
+        auth_values = (user, password)
+        response = requests.get(url, auth=auth_values)
+        print(response.status_code)
+        if(response.status_code == 401 or response.status_code== 500):
+                return False
+        #Traemos el total de los registros para poder saber cuántos tenemos
+        totalRegistros = int(response.json()['info']['foundSetCount'])
+
+        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CPROVEEDOR%2CCONSIGNATARIO_HOUSE%2CAEREOPUERTO_SALIDA%2CCIUDAD_SALIDA%2CAEREOPUERTO_DESTINO%2CCIUDAD_DESTINO%2CAWB%2CHWB%2CETD%2CETA%2CID_CLIENTE%2CCLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
+
+        response = requests.get(url, auth=auth_values)
+
+        ingresados = 0
+        lastID = ""
+        for i in response.json()['data']:
+                lastID = str(i['ID_CALCULO'])
+                embarqueAer = acomodaEmbarqueAer(i)
+                db.session.add(embarqueAer)
+                db.session.commit()
+                ingresados += 1
+        
+        if ingresados == totalRegistros:
+                return True
+        else:
+                while(not (ingresados == totalRegistros)):
+                        url = 'http://app.dynalias.com/RESTfm/EASYLOAD/layout/EmbarquesAerApi.json?RFMfind=SELECT%20ID_FILE_AEREO%2CID_CLIENTE%20WHERE%20STATUS_FILE%3DACTIVA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20ID_CALCULO%3D' + lastID + '%20ORDER%20BY%20NUM_FILE_AEREO%20ASC'
+                        response = requests.get(url, auth=auth_values)
+
+                        for i in response.json()['data']:
+                                lastID = str(i['ID_CALCULO'])
+                                embarqueAer = acomodaEmbarqueAer(i)
+                                db.session.add(embarqueAer)
+                                db.session.commit()
+                                ingresados += 1
+                return True
+
+
 def cargaFacturas(crm):
         url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/FacturasApi.json?RFMfind=SELECT%20%27_NO FACTURA%27%2CFactNum%20WHERE%20STATUS_PAGO%3D%27SIN PAGAR%27%20AND%20STATUS%3DFACTURADA%20AND%20ID_CLIENTE%3D' + crm
 
@@ -142,7 +232,7 @@ def cargaFacturas(crm):
         #Traemos el total de los registros para poder saber cuántos tenemos
         totalRegistros = int(response.json()['info']['foundSetCount'])
 
-        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/FacturasApi.json?RFMfind=SELECT%20%27_NO FACTURA%27%2CFactNum%2CCFDI.UUID%2CID_CLIENTE%2CCERTIFICADO.FECHA%2CFILE%2CEMPRESA_QUE_FACTURARA%2CRFC%2CNombrePdf%2CXmlEncode%2CPdfEncode%2CSERIE%2CCODIGO_DIVISA%2C%27IMPORTE FACT%27%2C%27FECHA FACT%27%2CTIPO.COMPROBANTE%20WHERE%20STATUS_PAGO%3D%27SIN PAGAR%27%20AND%20STATUS%3DFACTURADA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20FactNum%20ASC'
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/FacturasApi.json?RFMfind=SELECT%20%27_NO FACTURA%27%2CFactNum%2CCFDI.UUID%2CID_CLIENTE%2CCERTIFICADO.FECHA%2CFILE%2CEMPRESA_QUE_FACTURARA%2CRFC%2CNombrePdf%2CXmlEncode%2CPdfEncode%2CSERIE%2CCODIGO_DIVISA%2C%27IMPORTE FACT%27%2C%27FECHA FACT%27%2CTIPO.COMPROBANTE%2C%27PLACE OF RECEIPT%27%2C%27PORT OF LOADING%27%2C%27PORT OF DISCHARGE%27%2C%27PLACE OF DELIVERY%27%2CFECHA_PAGO%20WHERE%20STATUS_PAGO%3D%27SIN PAGAR%27%20AND%20STATUS%3DFACTURADA%20AND%20ID_CLIENTE%3D' + crm  + '%20ORDER%20BY%20FactNum%20ASC'
 
         response = requests.get(url, auth=auth_values)
 
@@ -159,7 +249,7 @@ def cargaFacturas(crm):
                 return True
         else:
                 while(not (ingresados == totalRegistros)):
-                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/FacturasApi.json?RFMfind=SELECT%20%27_NO FACTURA%27%2CFactNum%2CCFDI.UUID%2CID_CLIENTE%2CCERTIFICADO.FECHA%2CFILE%2CEMPRESA_QUE_FACTURARA%2CRFC%2CNombrePdf%2CXmlEncode%2CPdfEncode%2CSERIE%2CCODIGO_DIVISA%2C%27IMPORTE FACT%27%2C%27FECHA FACT%27%2CTIPO.COMPROBANTE%20WHERE%20STATUS_PAGO%3D%27SIN PAGAR%27%20AND%20STATUS%3DFACTURADA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20FactNum%3E' + lastID + '%20ORDER%20BY%20FactNum%20ASC%20LIMIT%2020'
+                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/FacturasApi.json?RFMfind=SELECT%20%27_NO FACTURA%27%2CFactNum%2CCFDI.UUID%2CID_CLIENTE%2CCERTIFICADO.FECHA%2CFILE%2CEMPRESA_QUE_FACTURARA%2CRFC%2CNombrePdf%2CXmlEncode%2CPdfEncode%2CSERIE%2CCODIGO_DIVISA%2C%27IMPORTE FACT%27%2C%27FECHA FACT%27%2CTIPO.COMPROBANTE%2C%27PLACE OF RECEIPT%27%2C%27PORT OF LOADING%27%2C%27PORT OF DISCHARGE%27%2C%27PLACE OF DELIVERY%27%2CFECHA_PAGO%20WHERE%20STATUS_PAGO%3D%27SIN PAGAR%27%20AND%20STATUS%3DFACTURADA%20AND%20ID_CLIENTE%3D' + crm + '%20AND%20FactNum%3E' + lastID + '%20ORDER%20BY%20FactNum%20ASC%20LIMIT%2020'
                         response = requests.get(url, auth=auth_values)
 
                         print("Aqui truena, codigo ",response.status_code)
@@ -190,10 +280,17 @@ def acomodaFactura(respuesta):
         fechaFact = str(respuesta['FECHA FACT'])
         tipoComprobante = str(respuesta['TIPO.COMPROBANTE'])
         factNum = str(respuesta['FactNum'])
+        placeReceipt = str(respuesta['PLACE OF RECEIPT'])
+        portLoading = str(respuesta['PORT OF LOADING'])
+        portDischarge = str(respuesta['PORT OF DISCHARGE'])
+        placeDelivery = str(respuesta['PLACE OF DELIVERY'])
+        fechaPago = str(respuesta['FECHA_PAGO'])
 
         nuevaFactura = Factura(noFactura, cfdi, crm, certificadoFecha, noFile, empresa, rfc, nombrePdf, 
-                        xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante, factNum)
+                        xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante, factNum,
+                        placeReceipt, portLoading, portDischarge, placeDelivery, fechaPago)
         return nuevaFactura
+
 
 def acomodaCliente(respuesta):
         rfc = str(respuesta['RFC'])
@@ -203,6 +300,7 @@ def acomodaCliente(respuesta):
         nuevoCliente = Cliente(rfc, password, crm)
 
         return nuevoCliente
+
 
 def acomodaEmbarque(respuesta):
         idFile = int(respuesta['ID_FILE']) if 'ID_FILE' in respuesta else " "
@@ -231,3 +329,48 @@ def acomodaEmbarque(respuesta):
                                  contenedores, etd, eta, status, crm)
         
         return nuevoEmbarque
+
+
+def acomodaEmbarqueTer(respuesta):
+        idFileTer = str(respuesta['ID_CALCULO']) if 'ID_CALCULO' in respuesta else " "
+        operacion = str(respuesta['OPERACION']) if 'OPERACION' in respuesta else " " 
+        tipoMovimiento = str(respuesta['TIPO DE MOVIMIETO']) if 'TIPO DE MOVIMIETO' in respuesta else " "
+        cliente = str(respuesta['CLIENTE']) if 'CLIENTE' in respuesta else " "
+        origen = str(respuesta['ORIGEN']) if 'ORIGEN' in respuesta else " "
+        destino = str(respuesta['DESTINO']) if 'DESTINO' in respuesta else " "
+        fechaCarga = str(respuesta['FECHA CARGA']) if 'FECHA CARGA' in respuesta else " "
+        fechaArribo = str(respuesta['FECHA ARRIBO']) if 'FECHA ARRIBO' in respuesta else " "
+        tipoCaja = str(respuesta['TIPO_CAJA']) if 'TIPO_CAJA' in respuesta else " "
+        crm = str(respuesta["_ID_CLIENTE"]) if '_ID_CLIENTE' in respuesta else " "
+        rutaInt = str(respuesta['RUTA']) if 'RUTA' in respuesta else " "
+        frontera = str(respuesta['CRUCE']) if 'CRUCE' in respuesta else " "
+        lineanac = str(respuesta['LINEA TRANSPORTISTA NACIONAL']) if 'LINEA TRANSPORTISTA NACIONAL' in respuesta else " "
+        lineaint = str(respuesta['LINEA TRANSPORTISTA INTERN']) if 'LINEA TRANSPORTISTA INTERN' in respuesta else " "
+        mercancia = str(respuesta['MERCANCIA']) if 'MERCANCIA' in respuesta else " "
+        fechaDescarga = str(respuesta['FECHA DESCARGA']) if 'FECHA DESCARGA' in respuesta else " "        
+
+        nuevoEmbarqueTer = EmbarqueTer(idFileTer, operacion, tipoMovimiento, cliente, origen, destino, fechaCarga, fechaArribo,
+                                 tipoCaja, crm, rutaInt, frontera, lineanac, lineaint, mercancia, fechaDescarga)
+        
+        return nuevoEmbarqueTer       
+
+def acomodaEmbarqueAer(respuesta):
+        idFileAer = str(respuesta['ID_CALCULO']) if 'ID_CALCULO' in respuesta else " "
+        shipper = str(respuesta['PROVEEDOR']) if 'PROVEEDOR' in respuesta else " " 
+        consignatario = str(respuesta['CONSIGNATARIO_HOUSE']) if 'CONSIGNATARIO_HOUSE' in respuesta else " "
+        aeropuertoSalida = str(respuesta['AEREOPUERTO_SALIDA']) if 'AEREOPUERTO_SALIDA' in respuesta else " "
+        origen = str(respuesta['CIUDAD_SALIDA']) if 'CIUDAD_SALIDA' in respuesta else " "
+        aeropuertoDestino = str(respuesta['AEREOPUERTO_DESTINO']) if 'AEREOPUERTO_DESTINO' in respuesta else " "
+        destino = str(respuesta['CIUDAD_DESTINO']) if 'CIUDAD_DESTINO' in respuesta else " "
+        awb = str(respuesta['AWB']) if 'AWB' in respuesta else " "
+        hwb = str(respuesta['HWB']) if 'HWB' in respuesta else " "  
+        etd = str(respuesta['ETD']) if 'ETD' in respuesta else " "
+        eta = str(respuesta['ETA']) if 'ETA' in respuesta else " "
+        crm = str(respuesta['ID_CLIENTE']) if 'ID_CLIENTE' in respuesta else " "
+        cliente = str(respuesta['CLIENTE']) if 'CLIENTE' in respuesta else " "  
+            
+
+        nuevoEmbarqueAer = EmbarqueAer(idFileAer, shipper, consignatario, aeropuertoSalida, origen,
+        aeropuertoDestino, destino, awb, hwb, etd, eta, crm, cliente)
+        
+        return nuevoEmbarqueAer  
