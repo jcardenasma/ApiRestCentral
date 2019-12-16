@@ -1,3 +1,4 @@
+from app_db import db
 
 # Embarques Clase/Modelo
 class EmbarqueAer(db.Model):
