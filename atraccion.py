@@ -332,7 +332,7 @@ def acomodaEmbarque(respuesta):
 
 
 def acomodaEmbarqueTer(respuesta):
-        idFileTer = str(respuesta['ID_CALCULO']) if 'ID_CALCULO' in respuesta else " "
+        idFileTer = str(respuesta['__ID_TERRESTRE']) if '__ID_TERRESTRE' in respuesta else " "
         operacion = str(respuesta['OPERACION']) if 'OPERACION' in respuesta else " " 
         tipoMovimiento = str(respuesta['TIPO DE MOVIMIETO']) if 'TIPO DE MOVIMIETO' in respuesta else " "
         cliente = str(respuesta['CLIENTE']) if 'CLIENTE' in respuesta else " "
@@ -355,7 +355,7 @@ def acomodaEmbarqueTer(respuesta):
         return nuevoEmbarqueTer       
 
 def acomodaEmbarqueAer(respuesta):
-        idFileAer = str(respuesta['ID_CALCULO']) if 'ID_CALCULO' in respuesta else " "
+        idFileAer = str(respuesta['ID_AEREO_EASYLOAD']) if 'ID_AEREO_EASYLOAD' in respuesta else " "
         shipper = str(respuesta['PROVEEDOR']) if 'PROVEEDOR' in respuesta else " " 
         consignatario = str(respuesta['CONSIGNATARIO_HOUSE']) if 'CONSIGNATARIO_HOUSE' in respuesta else " "
         aeropuertoSalida = str(respuesta['AEREOPUERTO_SALIDA']) if 'AEREOPUERTO_SALIDA' in respuesta else " "
