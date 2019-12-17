@@ -287,6 +287,7 @@ def set_EmbarqueAer():
     else:
         data = request.get_json()
         busqueda = EmbarqueAer.query.filter_by(idFileAer = data['ID_FILE_AEREO']).first()
+        busqueda.idCalculo = data['ID_AEREO_EASYLOAD']        
         busqueda.shipper = data['PROVEEDOR']
         busqueda.consignatario = data['CONSIGNATARIO_HOUSE']
         busqueda.aeropuertoSalida = data['AEREOPUERTO_SALIDA']

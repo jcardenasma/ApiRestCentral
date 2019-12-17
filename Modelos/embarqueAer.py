@@ -4,6 +4,7 @@ from app_db import db
 class EmbarqueAer(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     idFileAer = db.Column(db.String)
+    idCalculo = db.Column(db.String)    
     shipper = db.Column(db.String)
     consignatario = db.Column(db.String)
     aeropuertoSalida = db.Column(db.String)
@@ -17,9 +18,10 @@ class EmbarqueAer(db.Model):
     crm = db.Column(db.String, db.ForeignKey('cliente.crm'))
     cliente = db.Column(db.String)
 
-    def __init__(self, idFileAer, shipper, consignatario, aeropuertoSalida, origen, aeropuertoDestino, destino, 
+    def __init__(self, idFileAer, idCalculo, shipper, consignatario, aeropuertoSalida, origen, aeropuertoDestino, destino, 
                  awb, hwb, etd, eta, crm, cliente):
         self.idFileAer = idFileAer
+        self.idCalculo = idCalculo
         self.shipper = shipper
         self.consignatario = consignatario
         self.aeropuertoSalida = aeropuertoSalida

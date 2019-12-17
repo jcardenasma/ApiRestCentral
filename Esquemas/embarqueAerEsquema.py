@@ -4,5 +4,5 @@ from Modelos.embarqueAer import EmbarqueAer
 # Embarque esquema
 class EmbarqueAerEsquema(ma.Schema):
     class Meta:
-        fields = ('idFileAer','shipper', 'consignatario', 'aeropuertoSalida', 'origen', 'aeropuertoDestino', 'destino', 'awb',
+        fields = ('idFileAer', 'idCalculo', 'shipper', 'consignatario', 'aeropuertoSalida', 'origen', 'aeropuertoDestino', 'destino', 'awb',
                   'hwb', 'etd', 'eta', 'crm', 'cliente')
