@@ -371,7 +371,7 @@ def acomodaEmbarqueAer(respuesta):
         cliente = str(respuesta['CLIENTE']) if 'CLIENTE' in respuesta else " "  
             
 
-        nuevoEmbarqueAer = EmbarqueAer(idFileAer, shipper, consignatario, aeropuertoSalida, origen,
+        nuevoEmbarqueAer = EmbarqueAer(idFileAer, idCalculo, shipper, consignatario, aeropuertoSalida, origen,
         aeropuertoDestino, destino, awb, hwb, etd, eta, crm, cliente)
         
         return nuevoEmbarqueAer  
