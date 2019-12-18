@@ -25,7 +25,7 @@ class Factura(db.Model):
     fechaPago  = db.Column(db.String)
 
     def __init__(self, noFactura, cfdi, crm, certificadoFecha, noFile, empresa, rfc, 
-                    nombrePdf, xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante,factNum,
+                    nombrePdf, xmlEncode, pdfEncode, serie, codigoDivisa, importeFact, fechaFact, tipoComprobante, factNum,
                     placeReceipt, portLoading, portDischarge, placeDelivery, fechaPago):
         self.noFactura = noFactura
         self.cfdi = cfdi
