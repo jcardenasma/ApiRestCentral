@@ -16,10 +16,10 @@ def insertaRegistroLogin(rfc):
         password = "Sys1638"
 
         auth_values = (user, password)
-        dataJson = {"RFC": ""+ rfc +""  }
+        dataJson = {"RFC": "BME820202JM6"  }
         print(dataJson)
 
-        response =  requests.post(url, auth=auth_values, data = dataJson, json=dataJson)
+        response =  requests.post(url, auth=auth_values, json=dataJson)
         return response.json()['data']
 
 def busquedaEmbarque():
