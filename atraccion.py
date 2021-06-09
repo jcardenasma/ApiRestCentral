@@ -19,7 +19,7 @@ def insertaRegistroLogin(rfc):
         dataJson = {"RFC": "BME820202JM6"  }
         print(dataJson)
 
-        response =  requests.post(url, auth=auth_values, json=dataJson)
+        response =  requests.post(url, auth=auth_values, data=dataJson)
         return response.json()['data']
 
 def busquedaEmbarque():
