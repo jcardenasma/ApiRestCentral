@@ -9,14 +9,14 @@ from Modelos.cliente import Cliente
 from Modelos.factura import Factura
 
 
-def insertaRegistroLogin(rfc):
+def insertaRegistroLogin(rfc, crm):
         url = "http://appfm.dynalias.com/RESTfm/EASYLOADEMONUEVO/bulk/RegistroApi.json"
 
         user = "system"
         password = "Sys1638"
 
         auth_values = (user, password)
-        dataJson = { "data": [ { "RFC": ""+rfc+"" } ] }
+        dataJson = { "data": [ { "RFC": ""+rfc+"", "CRM": ""+crm+"" } ] }
         print(dataJson)
 
         response =  requests.post(url, auth=auth_values, json=dataJson)
