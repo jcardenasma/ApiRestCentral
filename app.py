@@ -445,6 +445,7 @@ def login():
     busqueda = Cliente.query.filter(Cliente.rfc == str(data['rfc']), Cliente.password == data['password']).first_or_404()
     salida = cliente_esquema.dump(busqueda)['crm']
     print (str(data['rfc']))
+    print(busqueda)
     insert = atraccion.insertaRegistroLogin(str(data['rfc']))
     return jsonify({'clave': salida})
 
