@@ -10,7 +10,7 @@ from Modelos.factura import Factura
 
 
 def insertaRegistroLogin(rfc, crm):
-        url = "http://appfm.dynalias.com/RESTfm/EASYLOADEMONUEVO/bulk/RegistroApi.json"
+        url = "http://fmaker.dynalias.com/RESTfm/EASYLOAD/bulk/RegistroApi.json"
 
         user = "system"
         password = "Sys1638"
