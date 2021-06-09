@@ -16,7 +16,7 @@ def insertaRegistroLogin(rfc):
         password = "Sys1638"
 
         auth_values = (user, password)
-        dataJson = { "data": [ { "RFC": "BME820202JM6" } ] }
+        dataJson = { "data": [ { "RFC": ""+rfc+"" } ] }
         print(dataJson)
 
         response =  requests.post(url, auth=auth_values, json=dataJson)
