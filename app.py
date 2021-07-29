@@ -333,7 +333,7 @@ def copiar_Clientes():
 def set_Cliente():
     if request.method == 'POST':
         data = request.get_json()
-        newClient = Cliente(data["rfc"], data["password"], data["crm"])
+        newClient = Cliente(data["rfc"], data["username"], data["password"], data["crm"])
         db.session.add(newClient)
         db.session.commit()
         return jsonify({'msg': 'El cliente fue agregado exitosamente'})
@@ -341,6 +341,7 @@ def set_Cliente():
         data = request.get_json()
         busqueda = Cliente.query.filter_by(crm = (data['crm'])).first()
         busqueda.rfc = data['rfc']
+        busqueda.username = data['username']
         busqueda.password = data['password']
         db.session.commit()
         return jsonify({'msg': 'Cliente modificado exitosamente'})
@@ -376,10 +377,11 @@ def act_cliente():
         db.session.commit()
         return jsonify({'msg': 'El cliente ha sido añadido exitosamente'})
     else:
-        if busqueda.rfc == data['RFC'] and busqueda.password == data['PasswordApi']:
+        if busqueda.rfc == data['RFC'] and busqueda.username == data ['Username'] and busqueda.password == data['PasswordApi']:
             return jsonify({'msg': 'El cliente se encuentra actualizado'})
         else:
             busqueda.rfc = data['RFC']
+            busqueda.username = data['Username']
             busqueda.password = data['PasswordApi']
             db.session.commit()
             return jsonify({'msg': 'El cliente ha sido actualizado exitosamente'})
@@ -442,7 +444,7 @@ def login():
     print("Llamada:", request)
     data = request.get_json()
     print("Cuerpo:" ,data)
-    busqueda = Cliente.query.filter(Cliente.rfc == str(data['rfc']), Cliente.password == data['password']).first_or_404()
+    busqueda = Cliente.query.filter(Cliente.username == str(data['username']), Cliente.password == data['password']).first_or_404()
     salida = cliente_esquema.dump(busqueda)['crm']
     insert = atraccion.insertaRegistroLogin(str(data['rfc']), salida)
     return jsonify({'clave': salida})

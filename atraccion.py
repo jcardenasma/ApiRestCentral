@@ -37,7 +37,7 @@ def busquedaEmbarque():
                 #json.dump(response.json()['data'], outfile)
 
 def copiaClientes():
-        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ClienteNum%2CRFC%2CPasswordApi%2CID_CLIENTE%20WHERE%20STATUS%3DCLIENTE%20ORDER%20BY%20ClienteNum%20ASC'
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ClienteNum%2CRFC%2CPasswordApi%2CID_CLIENTE%2CUsername%20WHERE%20STATUS%3DCLIENTE%20ORDER%20BY%20ClienteNum%20ASC'
         user = "system"
         password = "Sys1638"
 
@@ -61,7 +61,7 @@ def copiaClientes():
                 return True
         else:
                 while(not (ingresados == totalRegistros)):
-                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ClienteNum%2CRFC%2CPasswordApi%2CID_CLIENTE%20WHERE%20STATUS%3DCLIENTE%20AND%20ClienteNum%3E' + lastID + '%20ORDER%20BY%20ClienteNum%20ASC'
+                        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ClienteNum%2CRFC%2CPasswordApi%2CID_CLIENTE%2CUsername%20WHERE%20STATUS%3DCLIENTE%20AND%20ClienteNum%3E' + lastID + '%20ORDER%20BY%20ClienteNum%20ASC'
                         response = requests.get(url, auth=auth_values)
                         for i in response.json()['data']:
                                 #print(response.json()['data'])
@@ -74,7 +74,7 @@ def copiaClientes():
         return False
 
 def copiaClientesFaltantes(maxID, totalActuales):
-        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ID_CLIENTE%2CRFC%2CPasswordApi%20WHERE%20STATUS%3DCLIENTE'
+        url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ID_CLIENTE%2CRFC%2CPasswordApi%2CUsername%20WHERE%20STATUS%3DCLIENTE'
         user = "system"
         password = "Sys1638"
 
@@ -90,7 +90,7 @@ def copiaClientesFaltantes(maxID, totalActuales):
 
         print(lastID)
         while(ingresados < numeroFaltantes):
-                url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ID_CLIENTE%2CRFC%2CPasswordApi%20WHERE%20STATUS%3DCLIENTE%20AND%20ID_CLIENTE%3E' + lastID
+                url = 'http://fmaker.dynalias.com/RESTfm/EASYLOAD/layout/LoginClientesApi.json?RFMfind=SELECT%20ID_CLIENTE%2CRFC%2CPasswordApi%2CUsername%20WHERE%20STATUS%3DCLIENTE%20AND%20ID_CLIENTE%3E' + lastID
                 response = requests.get(url, auth=auth_values)
                 for i in response.json()['data']:
                         #print(response.json()['data'])
@@ -308,10 +308,11 @@ def acomodaFactura(respuesta):
 
 def acomodaCliente(respuesta):
         rfc = str(respuesta['RFC'])
+        username = str(respuesta['Username'])
         password = str(respuesta['PasswordApi'])
         crm = str(respuesta['ID_CLIENTE'])
 
-        nuevoCliente = Cliente(rfc, password, crm)
+        nuevoCliente = Cliente(rfc, username, password, crm)
 
         return nuevoCliente
 
